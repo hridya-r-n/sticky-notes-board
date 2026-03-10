@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📌 Sticky Notes Board</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --cream:   #fdfbf7;
+            --board:   #f5f0e8;
+            --cork:    #c4a882;
+            --text:    #2d2416;
+            --muted:   #8a7a65;
+            --accent:  #e85d26;
+            --shadow:  rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--cream);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── HEADER ── */
+        header {
+            background: #2d2416;
+            color: #fdfbf7;
+            padding: 0 28px;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Kalam', cursive;
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: #fef08a;
+            white-space: nowrap;
+        }
+
+        .header-sep { flex: 1; }
+
+        #search-box {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 6px 16px;
+            color: #fdfbf7;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.85rem;
+            width: 200px;
+            transition: background 0.2s;
+        }
+        #search-box:focus { outline: none; background: rgba(255,255,255,0.18); }
+        #search-box::placeholder { color: rgba(255,255,255,0.45); }
+
+        .header-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 7px 18px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+        .header-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+        .note-count {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+            white-space: nowrap;
+        }
+
+        /* ── BOARD ── */
+        #board {
+            flex: 1;
+            padding: 32px 28px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-content: flex-start;
+        }
+
+        /* ── EMPTY STATE ── */
+        #empty-msg {
+            width: 100%;
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--muted);
+            display: none;
+        }
+        #empty-msg .big { font-size: 3rem; margin-bottom: 12px; }
+        #empty-msg p { font-family: 'Kalam', cursive; font-size: 1.2rem; }
+
+        /* ── STICKY NOTE ── */
+        .note {
+            width: 220px;
+            min-height: 190px;
+            border-radius: 2px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 3px 4px 12px var(--shadow), 0 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.75) rotate(-2deg); }
+            to   { opacity: 1; transform: scale(1) rotate(var(--rot)); }
+        }
+        .note:hover {
+            transform: translateY(-4px) rotate(0deg) scale(1.02);
+            box-shadow: 6px 10px 24px var(--shadow);
+            z-index: 10;
+        }
+
+        /* Push-pin on pinned notes */
+        .note.pinned::before {
+            content: "📌";
+            position: absolute;
+            top: -10px; left: 50%; transform: translateX(-50%);
+            font-size: 1.1rem;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+        }
+
+        .note-top {
+            padding: 10px 10px 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+
+        .note-title {
+            flex: 1;
+            font-family: 'Kalam', cursive;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: rgba(0,0,0,0.72);
+            border: none; background: transparent;
+            outline: none; resize: none;
+            line-height: 1.3;
+            cursor: text;
+        }
+
+        .btn-pin, .btn-del {
+            background: none; border: none;
+            cursor: pointer; padding: 2px 3px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            opacity: 0.4;
+            transition: opacity 0.15s, background 0.15s;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .btn-pin:hover, .btn-del:hover { opacity: 1; background: rgba(0,0,0,0.08); }
+        .note.pinned .btn-pin { opacity: 0.85; }
+
+        .note-body {
+            flex: 1;
+            padding: 10px;
+        }
+
+        .note-content {
+            width: 100%;
+            font-family: 'Kalam', cursive;
+            font-size: 0.92rem;
+            color: rgba(0,0,0,0.62);
+            border: none; background: transparent;
+            outline: none; resize: none;
+            min-height: 80px;
+            line-height: 1.55;
+            cursor: text;
+        }
+
+        .note-footer {
+            padding: 6px 10px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .note-date {
+            font-size: 0.68rem;
+            color: rgba(0,0,0,0.38);
+            font-family: 'Nunito', sans-serif;
+        }
+
+        /* Color swatches — visible on hover */
+        .color-row {
+            display: flex; gap: 4px;
+            opacity: 0; transition: opacity 0.2s;
+        }
+        .note:hover .color-row { opacity: 1; }
+
+        .swatch {
+            width: 11px; height: 11px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 1.5px solid rgba(0,0,0,0.18);
+            transition: transform 0.15s;
+        }
+        .swatch:hover { transform: scale(1.4); }
+
+        /* ── MODAL ── */
+        .overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            animation: fadeIn 0.15s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            width: 360px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to   { opacity: 1; transform: none; }
+        }
+
+        .modal h2 {
+            font-family: 'Kalam', cursive;
+            font-size: 1.5rem;
+            margin-bottom: 18px;
+            color: var(--text);
+        }
+
+        .field { margin-bottom: 14px; }
+        .field label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            margin-bottom: 5px;
+        }
+        .field input, .field textarea {
+            width: 100%;
+            border: 1.5px solid #e0d8cc;
+            border-radius: 8px;
+            padding: 9px 12px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text);
+            transition: border-color 0.2s;
+        }
+        .field input:focus, .field textarea:focus {
+            outline: none; border-color: var(--accent);
+        }
+        .field textarea { min-height: 90px; resize: vertical; }
+
+        .color-picker { display: flex; gap: 8px; flex-wrap: wrap; }
+        .color-opt {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+        .color-opt:hover   { transform: scale(1.15); }
+        .color-opt.active  { border-color: #2d2416; transform: scale(1.15); }
+
+        .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-cancel-modal {
+            flex: 1; padding: 10px;
+            background: #f0ece5; border: none; border-radius: 8px;
+            font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.9rem;
+            cursor: pointer; transition: background 0.15s;
+        }
+        .btn-cancel-modal:hover { background: #e5e0d8; }
+        .btn-save {
+            flex: 2; padding: 10px;
+            background: var(--accent); border: none; border-radius: 8px;
+            color: white; font-family: 'Nunito', sans-serif;
+            font-weight: 700; font-size: 0.9rem;
+            cursor: pointer; transition: opacity 0.15s;
+        }
+        .btn-save:hover { opacity: 0.88; }
+
+        /* ── TOAST ── */
+        #toast {
+            position: fixed; bottom: 24px; left: 50%;
+            transform: translateX(-50%) translateY(60px);
+            background: #2d2416; color: #fdfbf7;
+            padding: 10px 22px; border-radius: 24px;
+            font-size: 0.85rem; font-weight: 600;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+            transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+            z-index: 9999; opacity: 0; pointer-events: none;
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+<!-- ─── HEADER ─────────────────────────────────────────────────────────────── -->
+<header>
+    <span class="logo">📌 Sticky Board</span>
+    <div class="header-sep"></div>
+    <input type="text" id="search-box" placeholder="🔍  Search notes…" oninput="handleSearch(this.value)">
+    <span class="note-count" id="note-count"></span>
+    <button class="header-btn" onclick="openModal()">+ New Note</button>
+</header>
+
+<!-- ─── BOARD ──────────────────────────────────────────────────────────────── -->
+<div id="board">
+    <div id="empty-msg">
+        <div class="big">🗒️</div>
+        <p>No notes yet — click "+ New Note" to get started!</p>
+    </div>
+</div>
+
+<!-- ─── MODAL ──────────────────────────────────────────────────────────────── -->
+<div class="overlay" id="modal" style="display:none" onclick="handleOverlayClick(event)">
+    <div class="modal">
+        <h2 id="modal-heading">✏️ New Note</h2>
+
+        <div class="field">
+            <label>Title *</label>
+            <input type="text" id="f-title" placeholder="Note title…" maxlength="80">
+        </div>
+
+        <div class="field">
+            <label>Content</label>
+            <textarea id="f-content" placeholder="Write something…" maxlength="600"></textarea>
+        </div>
+
+        <div class="field">
+            <label>Color</label>
+            <div class="color-picker" id="color-picker"></div>
+        </div>
+
+        <div class="modal-btns">
+            <button class="btn-cancel-modal" onclick="closeModal()">Cancel</button>
+            <button class="btn-save" id="btn-save" onclick="saveNote()">Create Note</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- ─── SCRIPT ─────────────────────────────────────────────────────────────── -->
+<script>
+    // ── Config ─────────────────────────────────────────────────────────────────
+    const API = '/api/notes';
+
+    const COLORS = [
+        '#fef08a', // yellow
+        '#86efac', // green
+        '#93c5fd', // blue
+        '#f9a8d4', // pink
+        '#c4b5fd', // purple
+        '#fed7aa', // orange
+        '#a7f3d0', // teal
+        '#fca5a5', // red
+    ];
+
+    const ROTATIONS = ['-1.5deg', '-0.5deg', '0deg', '0.8deg', '1.5deg'];
+
+    let notes        = [];      // all notes fetched from API
+    let editingId    = null;    // null = creating new; number = editing existing
+    let chosenColor  = COLORS[0];
+    let searchTimer  = null;
+
+    // ── Boot ───────────────────────────────────────────────────────────────────
+    buildColorPicker();
+    loadNotes();
+
+    // ── Color Picker ───────────────────────────────────────────────────────────
+    function buildColorPicker() {
+        const cp = document.getElementById('color-picker');
+        COLORS.forEach(c => {
+            const d = document.createElement('div');
+            d.className = 'color-opt';
+            d.style.background = c;
+            d.dataset.color = c;
+            d.onclick = () => pickColor(c);
+            cp.appendChild(d);
+        });
+        pickColor(COLORS[0]);
+    }
+
+    function pickColor(c) {
+        chosenColor = c;
+        document.querySelectorAll('.color-opt').forEach(d => {
+            d.classList.toggle('active', d.dataset.color === c);
+        });
+    }
+
+    // ── Load Notes from API ────────────────────────────────────────────────────
+    async function loadNotes() {
+        try {
+            const res = await fetch(API);
+            notes = await res.json();
+            renderBoard(notes);
+        } catch (e) {
+            toast('⚠️ Could not reach the server');
+        }
+    }
+
+    // ── Render Board ───────────────────────────────────────────────────────────
+    function renderBoard(list) {
+        const board = document.getElementById('board');
+        // Remove all existing note cards
+        board.querySelectorAll('.note').forEach(n => n.remove());
+
+        document.getElementById('empty-msg').style.display =
+            list.length === 0 ? 'block' : 'none';
+
+        const total = notes.length;
+        document.getElementById('note-count').textContent =
+            total === 0 ? '' : total + (total === 1 ? ' note' : ' notes');
+
+        list.forEach(note => board.appendChild(makeNoteCard(note)));
+    }
+
+    // ── Build a Note Card element ──────────────────────────────────────────────
+    function makeNoteCard(note) {
+        const el = document.createElement('div');
+        el.className = 'note' + (note.pinned ? ' pinned' : '');
+        el.dataset.id = note.id;
+        el.style.background = note.color || '#fef08a';
+
+        // Slight random tilt based on ID (consistent, not random each render)
+        el.style.setProperty('--rot', ROTATIONS[note.id % ROTATIONS.length]);
+        el.style.transform = 'rotate(' + ROTATIONS[note.id % ROTATIONS.length] + ')';
+
+        // Color swatches
+        const swatches = COLORS.map(c =>
+            `<div class="swatch" style="background:${c}"
+                  onclick="changeColor(event,${note.id},'${c}')"></div>`
+        ).join('');
+
+        el.innerHTML = `
+            <div class="note-top">
+                <button class="btn-pin" onclick="togglePin(event,${note.id})"
+                        title="${note.pinned ? 'Unpin' : 'Pin'}">
+                    ${note.pinned ? '📌' : '📍'}
+                </button>
+                <textarea class="note-title" rows="1"
+                    placeholder="Title…"
+                    onblur="saveInline(${note.id})"
+                    oninput="autoH(this)">${esc(note.title)}</textarea>
+                <button class="btn-del" onclick="deleteNote(event,${note.id})" title="Delete">✕</button>
+            </div>
+            <div class="note-body">
+                <textarea class="note-content"
+                    placeholder="Write something…"
+                    onblur="saveInline(${note.id})"
+                    oninput="autoH(this)">${esc(note.content || '')}</textarea>
+            </div>
+            <div class="note-footer">
+                <span class="note-date">${note.createdAt || ''}</span>
+                <div class="color-row">${swatches}</div>
+            </div>`;
+
+        // Auto-size textareas after rendering
+        setTimeout(() => {
+            el.querySelectorAll('textarea').forEach(autoH);
+        }, 0);
+
+        return el;
+    }
+
+    // ── Inline Save (on blur) ──────────────────────────────────────────────────
+    async function saveInline(id) {
+        const el  = document.querySelector(`.note[data-id="${id}"]`);
+        if (!el) return;
+        const title   = el.querySelector('.note-title').value.trim();
+        const content = el.querySelector('.note-content').value;
+        if (!title) return;
+
+        // Only save if something actually changed
+        const original = notes.find(n => n.id === id);
+        if (original && title === original.title && content === (original.content || '')) return;
+
+        try {
+            const res  = await fetch(`${API}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, content })
+            });
+            const updated = await res.json();
+            const idx = notes.findIndex(n => n.id === id);
+            if (idx >= 0) notes[idx] = { ...notes[idx], ...updated };
+        } catch (e) { /* silent — note stays as-is */ }
+    }
+
+    // ── Toggle Pin ─────────────────────────────────────────────────────────────
+    async function togglePin(e, id) {
+        e.stopPropagation();
+        try {
+            const res  = await fetch(`${API}/${id}/pin`, { method: 'PATCH' });
+            const note = await res.json();
+            const idx  = notes.findIndex(n => n.id === id);
+            if (idx >= 0) notes[idx] = note;
+            renderBoard(notes);
+            toast(note.pinned ? '📌 Note pinned' : '📍 Unpinned');
+        } catch (e) { toast('⚠️ Something went wrong'); }
+    }
+
+    // ── Change Color ───────────────────────────────────────────────────────────
+    async function changeColor(e, id, color) {
+        e.stopPropagation();
+        const el = document.querySelector(`.note[data-id="${id}"]`);
+        if (el) el.style.background = color;
+        try {
+            await fetch(`${API}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ color })
+            });
+            const idx = notes.findIndex(n => n.id === id);
+            if (idx >= 0) notes[idx].color = color;
+        } catch (e) { /* silent */ }
+    }
+
+    // ── Delete Note ────────────────────────────────────────────────────────────
+    async function deleteNote(e, id) {
+        e.stopPropagation();
+        const el = document.querySelector(`.note[data-id="${id}"]`);
+
+        // Animate out
+        if (el) {
+            el.style.transition = 'transform 0.2s, opacity 0.2s';
+            el.style.transform  = 'scale(0.7) rotate(5deg)';
+            el.style.opacity    = '0';
+            await new Promise(r => setTimeout(r, 200));
+        }
+
+        try {
+            await fetch(`${API}/${id}`, { method: 'DELETE' });
+            notes = notes.filter(n => n.id !== id);
+            renderBoard(notes);
+            toast('🗑️ Note deleted');
+        } catch (err) {
+            toast('⚠️ Could not delete');
+            loadNotes();
+        }
+    }
+
+    // ── Search ─────────────────────────────────────────────────────────────────
+    function handleSearch(val) {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+            if (!val.trim()) {
+                renderBoard(notes);
+                return;
+            }
+            const q = val.toLowerCase();
+            const filtered = notes.filter(n =>
+                n.title.toLowerCase().includes(q) ||
+                (n.content || '').toLowerCase().includes(q)
+            );
+            renderBoard(filtered);
+        }, 200);
+    }
+
+    // ── Modal ──────────────────────────────────────────────────────────────────
+    function openModal(id) {
+        editingId = id || null;
+        const heading = document.getElementById('modal-heading');
+        const saveBtn = document.getElementById('btn-save');
+
+        if (editingId) {
+            const note = notes.find(n => n.id === editingId);
+            document.getElementById('f-title').value   = note ? note.title   : '';
+            document.getElementById('f-content').value = note ? note.content : '';
+            pickColor(note ? note.color : COLORS[0]);
+            heading.textContent  = '✏️ Edit Note';
+            saveBtn.textContent  = 'Save Changes';
+        } else {
+            document.getElementById('f-title').value   = '';
+            document.getElementById('f-content').value = '';
+            pickColor(COLORS[Math.floor(Math.random() * COLORS.length)]);
+            heading.textContent = '✏️ New Note';
+            saveBtn.textContent = 'Create Note';
+        }
+
+        document.getElementById('modal').style.display = 'flex';
+        setTimeout(() => document.getElementById('f-title').focus(), 60);
+    }
+
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+        editingId = null;
+    }
+
+    function handleOverlayClick(e) {
+        if (e.target.id === 'modal') closeModal();
+    }
+
+    // ── Save (Create or Update) ────────────────────────────────────────────────
+    async function saveNote() {
+        const title   = document.getElementById('f-title').value.trim();
+        const content = document.getElementById('f-content').value;
+
+        if (!title) {
+            document.getElementById('f-title').focus();
+            toast('⚠️ Please enter a title');
+            return;
+        }
+
+        const payload = { title, content, color: chosenColor };
+
+        try {
+            if (editingId) {
+                // ── UPDATE existing note ──
+                const res  = await fetch(`${API}/${editingId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const updated = await res.json();
+                const idx = notes.findIndex(n => n.id === editingId);
+                if (idx >= 0) notes[idx] = updated;
+                toast('✅ Note updated');
+            } else {
+                // ── CREATE new note ──
+                const res   = await fetch(API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const created = await res.json();
+                notes.push(created);
+                toast('✅ Note created!');
+            }
+
+            renderBoard(notes);
+            closeModal();
+        } catch (e) {
+            toast('⚠️ Could not save the note');
+        }
+    }
+
+    // ── Toast notification ─────────────────────────────────────────────────────
+    let toastTimer;
+    function toast(msg) {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
+    }
+
+    // ── Helpers ────────────────────────────────────────────────────────────────
+    function autoH(el) {
+        el.style.height = 'auto';
+        el.style.height = el.scrollHeight + 'px';
+    }
+
+    function esc(s) {
+        return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // ── Keyboard shortcuts ─────────────────────────────────────────────────────
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeModal();
+        if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+            e.preventDefault();
+            openModal();
+        }
+    });
+</script>
+</body>
+</html>

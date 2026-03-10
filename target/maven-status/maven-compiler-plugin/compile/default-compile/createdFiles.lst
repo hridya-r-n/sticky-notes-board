@@ -1,0 +1,7 @@
+com\stickynotes\controller\NoteController.class
+com\stickynotes\StickyNotesApplication.class
+com\stickynotes\model\NoteRequest.class
+com\stickynotes\service\NoteService.class
+com\stickynotes\model\StickyNote.class
+com\stickynotes\model\StickyNote$Builder.class
+com\stickynotes\service\NoteObserver.class
