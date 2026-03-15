@@ -12,42 +12,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * REST CONTROLLER — Handles all HTTP requests from the browser.
- *
- * This is Spring MVC in action. Each method below handles one
- * type of HTTP request (GET, POST, PUT, DELETE).
- *
- * @RestController = @Controller + @ResponseBody
- *   Means: handle web requests AND automatically convert
- *   return values to JSON (no extra code needed).
- *
- * @RequestMapping("/api/notes") = all URLs in this class start with /api/notes
- *
- * Syllabus link: Spring MVC, RESTful Web Services, Spring Framework
- *
- * ─── Adapter Pattern (syllabus self-study) ────────────────────────────────
- * This controller acts as an ADAPTER between:
- *   - The outside world (HTTP requests with JSON)
- *   - Our internal Java code (StickyNote objects, NoteService methods)
- *
- * It "adapts" raw HTTP data into Java method calls, and Java objects
- * back into JSON HTTP responses — just like a power adapter converts
- * one plug type to another.
- */
+
 @RestController
 @RequestMapping("/api/notes")
 public class NoteController {
 
-    // Spring automatically injects NoteService here (Dependency Injection)
-    // We don't create it with "new NoteService()" — Spring manages it for us.
+    
     private final NoteService noteService;
 
     public NoteController(NoteService noteService) {
         this.noteService = noteService;
     }
 
-    // ─── GET /api/notes ────────────────────────────────────────────────────────
     // Returns all notes as a JSON array
     @GetMapping
     public ResponseEntity<List<StickyNote>> getAllNotes() {
@@ -55,7 +31,6 @@ public class NoteController {
         return ResponseEntity.ok(notes);   // HTTP 200 + JSON body
     }
 
-    // ─── GET /api/notes/{id} ───────────────────────────────────────────────────
     // Returns one note by its ID
     @GetMapping("/{id}")
     public ResponseEntity<StickyNote> getNoteById(@PathVariable long id) {
@@ -67,7 +42,6 @@ public class NoteController {
         }
     }
 
-    // ─── POST /api/notes ───────────────────────────────────────────────────────
     // Creates a new note. Browser sends JSON, Spring converts it to NoteRequest.
     @PostMapping
     public ResponseEntity<Object> createNote(@RequestBody NoteRequest request) {
@@ -82,7 +56,6 @@ public class NoteController {
         }
     }
 
-    // ─── PUT /api/notes/{id} ───────────────────────────────────────────────────
     // Updates an existing note's title, content, or color
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateNote(@PathVariable long id,
@@ -97,7 +70,6 @@ public class NoteController {
         }
     }
 
-    // ─── PATCH /api/notes/{id}/pin ─────────────────────────────────────────────
     // Toggles pin/unpin on a note
     @PatchMapping("/{id}/pin")
     public ResponseEntity<Object> togglePin(@PathVariable long id) {
@@ -111,7 +83,6 @@ public class NoteController {
         }
     }
 
-    // ─── DELETE /api/notes/{id} ────────────────────────────────────────────────
     // Deletes a note by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteNote(@PathVariable long id) {
@@ -127,7 +98,6 @@ public class NoteController {
         }
     }
 
-    // ─── GET /api/notes/search?q=keyword ──────────────────────────────────────
     // Searches notes by keyword
     @GetMapping("/search")
     public ResponseEntity<List<StickyNote>> searchNotes(@RequestParam String q) {

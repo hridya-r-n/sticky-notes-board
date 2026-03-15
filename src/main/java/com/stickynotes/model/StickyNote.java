@@ -3,37 +3,17 @@ package com.stickynotes.model;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-/**
- * MODEL — Represents a single sticky note.
- *
- * This is a plain Java class (also called a POJO - Plain Old Java Object).
- * No special annotations needed here. It just holds data.
- *
- * Spring Boot's Jackson library will automatically convert this
- * class to JSON when we return it from a REST endpoint.
- *
- * Example JSON output:
- * {
- *   "id": 1,
- *   "title": "My Note",
- *   "content": "Remember to study!",
- *   "color": "#fef08a",
- *   "pinned": false,
- *   "createdAt": "10 Mar 2025"
- * }
- *
- * Syllabus link: Builder Pattern (self-study)
- */
+
 public class StickyNote {
 
     private long id;
     private String title;
     private String content;
-    private String color;       // hex color e.g. "#fef08a"
+    private String color;       
     private boolean pinned;
-    private String createdAt;   // formatted date string
+    private String createdAt;  
 
-    // ─── Constructor ───────────────────────────────────────────────────────────
+    // Constructor
     public StickyNote(long id, String title, String content, String color) {
         this.id        = id;
         this.title     = title;
@@ -44,10 +24,10 @@ public class StickyNote {
                             .format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
     }
 
-    // Default constructor — required by Jackson (JSON library) to deserialize
+    // Default constructor 
     public StickyNote() {}
 
-    // ─── Getters ───────────────────────────────────────────────────────────────
+    // Getters
     public long   getId()        { return id; }
     public String getTitle()     { return title; }
     public String getContent()   { return content; }
@@ -55,7 +35,7 @@ public class StickyNote {
     public boolean isPinned()    { return pinned; }
     public String getCreatedAt() { return createdAt; }
 
-    // ─── Setters ───────────────────────────────────────────────────────────────
+    // Setters 
     public void setId(long id)           { this.id = id; }
     public void setTitle(String title)   { this.title = title; }
     public void setContent(String c)     { this.content = c; }
@@ -63,17 +43,7 @@ public class StickyNote {
     public void setPinned(boolean p)     { this.pinned = p; }
     public void setCreatedAt(String d)   { this.createdAt = d; }
 
-    // ─── Builder Pattern ───────────────────────────────────────────────────────
-    //
-    // The Builder pattern (from your syllabus self-study) lets us create
-    // objects step-by-step instead of one giant constructor call.
-    //
-    // Usage:
-    //   StickyNote note = new StickyNote.Builder(1, "Title")
-    //                          .content("Some text")
-    //                          .color("#fef08a")
-    //                          .build();
-    //
+    
     public static class Builder {
 
         // Required fields

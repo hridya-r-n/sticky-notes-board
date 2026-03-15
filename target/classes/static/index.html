@@ -5,24 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📌 Sticky Notes Board</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --cream:   #fdfbf7;
-            --board:   #f5f0e8;
-            --cork:    #c4a882;
-            --text:    #2d2416;
-            --muted:   #8a7a65;
-            --accent:  #e85d26;
-            --shadow:  rgba(0,0,0,0.15);
+            --cream:   #0f1729;
+            --board:   #111d35;
+            --text:    #e8ddd0;
+            --muted:   #7a8aaa;
+            --accent:  #f0a8c0;
+            --shadow:  rgba(0,0,0,0.3);
+            --glow:    0 0 12px rgba(240,168,192,0.2);
         }
 
         body {
-            font-family: 'Nunito', sans-serif;
+            font-family: 'DM Sans', sans-serif;
             background: var(--cream);
-            color: var(--text);
+            color: #c8d8e8;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -30,55 +30,58 @@
 
         /* ── HEADER ── */
         header {
-            background: #2d2416;
-            color: #fdfbf7;
+            background: rgba(10, 14, 30, 0.95);
+            color: #e8ddd0;
             padding: 0 28px;
             height: 58px;
             display: flex;
             align-items: center;
             gap: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            box-shadow: 0 1px 0 rgba(0, 212, 255, 0.2), 0 4px 24px rgba(0,0,0,0.6);
+            backdrop-filter: blur(12px);
             position: sticky; top: 0; z-index: 100;
         }
 
         .logo {
-            font-family: 'Kalam', cursive;
-            font-size: 1.45rem;
-            font-weight: 700;
-            color: #fef08a;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #f0a8c0;
             white-space: nowrap;
+            letter-spacing: 0.04em; 
+            text-shadow: 0 2px 12px rgba(240,168,192,0.3);
         }
 
         .header-sep { flex: 1; }
 
         #search-box {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(240,168,192,0.2);
             border-radius: 20px;
             padding: 6px 16px;
-            color: #fdfbf7;
-            font-family: 'Nunito', sans-serif;
+            color: #e8ddd0;
+            font-family: 'DM Sans', sans-serif;
             font-size: 0.85rem;
             width: 200px;
-            transition: background 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        #search-box:focus { outline: none; background: rgba(255,255,255,0.18); }
-        #search-box::placeholder { color: rgba(255,255,255,0.45); }
+        #search-box:focus { outline: none; border-color: rgba(240,168,192,0.6); box-shadow: var(--glow); }
+        #search-box::placeholder { color: rgba(255,255,255,0.25); }
 
         .header-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
+            background: rgba(240,168,192,0.15);
+            color: #f0a8c0;
+            border: 1px solid rgba(240,168,192,0.35);
             border-radius: 20px;
             padding: 7px 18px;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 700;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
             font-size: 0.85rem;
             cursor: pointer;
-            transition: opacity 0.2s, transform 0.1s;
+            transition: background 0.2s, box-shadow 0.2s;
             white-space: nowrap;
         }
-        .header-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+        .header-btn:hover { background: rgba(240,168,192,0.25); box-shadow: var(--glow); }
 
         .note-count {
             font-size: 0.8rem;
@@ -89,11 +92,8 @@
         /* ── BOARD ── */
         #board {
             flex: 1;
-            padding: 32px 28px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            align-content: flex-start;
+            position: relative;
+            overflow: hidden;
         }
 
         /* ── EMPTY STATE ── */
@@ -115,10 +115,11 @@
             padding: 0;
             display: flex;
             flex-direction: column;
-            box-shadow: 3px 4px 12px var(--shadow), 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 3px 4px 20px rgba(0,0,0,0.5);
             position: relative;
-            transition: transform 0.2s, box-shadow 0.2s;
-            animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            /* transition: transform 0.2s, box-shadow 0.2s;
+            animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); */
+            filter: saturate(1.1) brightness(1.4);
         }
         @keyframes popIn {
             from { opacity: 0; transform: scale(0.75) rotate(-2deg); }
@@ -126,9 +127,11 @@
         }
         .note:hover {
             transform: translateY(-4px) rotate(0deg) scale(1.02);
-            box-shadow: 6px 10px 24px var(--shadow);
+            box-shadow: 0 0 0 1px rgba(240,168,192,0.25), 0 8px 32px rgba(0,0,0,0.4);
+            filter: saturate(1.1) brightness(1.25);
             z-index: 10;
         }
+
 
         /* Push-pin on pinned notes */
         .note.pinned::before {
@@ -149,10 +152,10 @@
 
         .note-title {
             flex: 1;
-            font-family: 'Kalam', cursive;
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: rgba(0,0,0,0.72);
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 0.95rem !important;
+            color: rgba(3, 3, 3, 0.92);
             border: none; background: transparent;
             outline: none; resize: none;
             line-height: 1.3;
@@ -179,9 +182,9 @@
 
         .note-content {
             width: 100%;
-            font-family: 'Kalam', cursive;
-            font-size: 0.92rem;
-            color: rgba(0,0,0,0.62);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.82rem !important;
+            color: rgba(0, 0, 0, 0.82);
             border: none; background: transparent;
             outline: none; resize: none;
             min-height: 80px;
@@ -198,8 +201,8 @@
 
         .note-date {
             font-size: 0.68rem;
-            color: rgba(0,0,0,0.38);
-            font-family: 'Nunito', sans-serif;
+            color: rgba(43, 42, 42, 0.4);
+            font-family: 'DM Sans', sans-serif;
         }
 
         /* Color swatches — visible on hover */
@@ -229,11 +232,12 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .modal {
-            background: white;
+            background: #131e38;
+            border: 1px solid rgba(240,168,192,0.15);
             border-radius: 16px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.5);
             padding: 28px;
             width: 360px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             animation: slideUp 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         @keyframes slideUp {
@@ -242,10 +246,11 @@
         }
 
         .modal h2 {
-            font-family: 'Kalam', cursive;
-            font-size: 1.5rem;
-            margin-bottom: 18px;
-            color: var(--text);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 18px;    
+            color: #f0a8c0;
         }
 
         .field { margin-bottom: 14px; }
@@ -260,16 +265,20 @@
         }
         .field input, .field textarea {
             width: 100%;
-            border: 1.5px solid #e0d8cc;
-            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
             padding: 9px 12px;
-            font-family: 'Nunito', sans-serif;
-            font-size: 0.9rem;
-            color: var(--text);
-            transition: border-color 0.2s;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            color: #e8ddd0;
+            background: rgba(255,255,255,0.05);
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
+
         .field input:focus, .field textarea:focus {
-            outline: none; border-color: var(--accent);
+            outline: none;
+            border-color: rgba(240,168,192,0.5);
+            box-shadow: 0 0 10px rgba(240,168,192,0.1);
         }
         .field textarea { min-height: 90px; resize: vertical; }
 
@@ -287,28 +296,38 @@
         .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
         .btn-cancel-modal {
             flex: 1; padding: 10px;
-            background: #f0ece5; border: none; border-radius: 8px;
-            font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.9rem;
-            cursor: pointer; transition: background 0.15s;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: var(--muted);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500; font-size: 0.88rem;
+            cursor: pointer; transition: border-color 0.2s, color 0.2s;
         }
-        .btn-cancel-modal:hover { background: #e5e0d8; }
+        .btn-cancel-modal:hover { border-color: rgba(255,255,255,0.25); color: #e8ddd0; }
+
         .btn-save {
             flex: 2; padding: 10px;
-            background: var(--accent); border: none; border-radius: 8px;
-            color: white; font-family: 'Nunito', sans-serif;
-            font-weight: 700; font-size: 0.9rem;
-            cursor: pointer; transition: opacity 0.15s;
+            background: rgba(240,168,192,0.2);
+            border: 1px solid rgba(240,168,192,0.4);
+            border-radius: 10px;
+            color: #f0a8c0;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600; font-size: 0.88rem;
+            cursor: pointer; transition: background 0.2s, box-shadow 0.2s;
         }
-        .btn-save:hover { opacity: 0.88; }
+        .btn-save:hover { background: rgba(240,168,192,0.3); box-shadow: var(--glow); }
 
         /* ── TOAST ── */
         #toast {
             position: fixed; bottom: 24px; left: 50%;
             transform: translateX(-50%) translateY(60px);
-            background: #2d2416; color: #fdfbf7;
+            background: #131e38;
+            color: #f0a8c0;
+            border: 1px solid rgba(240,168,192,0.25);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
             padding: 10px 22px; border-radius: 24px;
             font-size: 0.85rem; font-weight: 600;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
             transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
             z-index: 9999; opacity: 0; pointer-events: none;
         }
@@ -363,20 +382,20 @@
 
 <div id="toast"></div>
 
-<!-- ─── SCRIPT ─────────────────────────────────────────────────────────────── -->
+<!-- SCRIPT -->
 <script>
-    // ── Config ─────────────────────────────────────────────────────────────────
+    // Config
     const API = '/api/notes';
 
     const COLORS = [
-        '#fef08a', // yellow
-        '#86efac', // green
-        '#93c5fd', // blue
-        '#f9a8d4', // pink
-        '#c4b5fd', // purple
-        '#fed7aa', // orange
-        '#a7f3d0', // teal
-        '#fca5a5', // red
+        '#6b3d5a', // dusty rose
+        '#2a4a6b', // slate blue
+        '#3a5c38', // sage green
+        '#6b5a28', // warm sand
+        '#3d2e6b', // soft lavender
+        '#6b3a28', // terracotta
+        '#1e5555', // muted teal
+        '#5a2850', // mauve
     ];
 
     const ROTATIONS = ['-1.5deg', '-0.5deg', '0deg', '0.8deg', '1.5deg'];
@@ -385,12 +404,81 @@
     let editingId    = null;    // null = creating new; number = editing existing
     let chosenColor  = COLORS[0];
     let searchTimer  = null;
+    let notePositions = {};   // stores { id: {x, y} } for each note
+    let dragState     = null; // tracks active drag
 
-    // ── Boot ───────────────────────────────────────────────────────────────────
+    // Generate a stable random position from note id
+    function randomPos(id) {
+        const board  = document.getElementById('board');
+        const bw     = board.offsetWidth  || window.innerWidth;
+        const bh     = board.offsetHeight || window.innerHeight - 58;
+        // Use id as a seed so position is consistent on re-render
+        const seed   = (id * 9301 + 49297) % 233280;
+        const x      = 40 + (seed % (bw - 280));
+        const y      = 40 + ((seed * 7) % (bh - 240));
+        return { x, y };
+    }
+
+    // Drag & Drop 
+    function initDrag(el, id) {
+        el.addEventListener('mousedown', function(e) {
+            // Don't drag when clicking buttons or textareas
+            if (['TEXTAREA','BUTTON','SVG','PATH'].includes(e.target.tagName)) return;
+            if (e.target.classList.contains('swatch')) return;
+            e.preventDefault();
+            const board    = document.getElementById('board');
+            const boardRect = board.getBoundingClientRect();
+            const noteRect  = el.getBoundingClientRect();
+        
+            dragState = {
+                el,
+                id,
+                offsetX: e.clientX - noteRect.left,
+                offsetY: e.clientY - noteRect.top,
+                boardRect
+            };
+
+            el.style.transition = 'none';
+            el.style.zIndex     = 999;
+            el.style.transform  = 'rotate(2deg) scale(1.04)';
+            el.style.boxShadow  = '0 16px 48px rgba(0,0,0,0.5)';
+        });
+    }
+    document.addEventListener('mousemove', function(e) {
+        if (!dragState) return;
+        const { el, offsetX, offsetY, boardRect } = dragState;
+
+        let x = e.clientX - boardRect.left - offsetX;
+        let y = e.clientY - boardRect.top  - offsetY;
+        
+        // Keep note within board bounds
+        x = Math.max(0, Math.min(boardRect.width  - 230, x));
+        y = Math.max(0, Math.min(boardRect.height - 200, y));
+
+        el.style.left = x + 'px';
+        el.style.top  = y + 'px';
+    });
+
+    document.addEventListener('mouseup', function(e) {
+        if (!dragState) return;
+        const { el, id } = dragState;
+        const x = parseFloat(el.style.left);
+        const y = parseFloat(el.style.top);
+        // Save the new position
+        notePositions[id] = { x, y };
+        const rot = ROTATIONS[id % ROTATIONS.length];
+        el.style.transition = 'transform 0.2s, box-shadow 0.2s';
+        el.style.transform  = 'rotate(' + rot + ')';
+        el.style.boxShadow  = '';
+        el.style.zIndex     = 1;
+        dragState = null;
+    });
+
+    // Boot 
     buildColorPicker();
     loadNotes();
 
-    // ── Color Picker ───────────────────────────────────────────────────────────
+    //  Color Picker 
     function buildColorPicker() {
         const cp = document.getElementById('color-picker');
         COLORS.forEach(c => {
@@ -411,7 +499,7 @@
         });
     }
 
-    // ── Load Notes from API ────────────────────────────────────────────────────
+    // Load Notes from API 
     async function loadNotes() {
         try {
             const res = await fetch(API);
@@ -422,7 +510,7 @@
         }
     }
 
-    // ── Render Board ───────────────────────────────────────────────────────────
+    // Render Board
     function renderBoard(list) {
         const board = document.getElementById('board');
         // Remove all existing note cards
@@ -438,14 +526,19 @@
         list.forEach(note => board.appendChild(makeNoteCard(note)));
     }
 
-    // ── Build a Note Card element ──────────────────────────────────────────────
+    // Build a Note Card element
     function makeNoteCard(note) {
         const el = document.createElement('div');
         el.className = 'note' + (note.pinned ? ' pinned' : '');
         el.dataset.id = note.id;
         el.style.background = note.color || '#fef08a';
+        el.style.position = 'absolute';
 
-        // Slight random tilt based on ID (consistent, not random each render)
+        // Use saved position or generate a random one based on note id
+        const pos = notePositions[note.id] || randomPos(note.id);
+        notePositions[note.id] = pos;
+        el.style.left = pos.x + 'px';
+        el.style.top  = pos.y + 'px';
         el.style.setProperty('--rot', ROTATIONS[note.id % ROTATIONS.length]);
         el.style.transform = 'rotate(' + ROTATIONS[note.id % ROTATIONS.length] + ')';
 
@@ -479,9 +572,15 @@
             </div>`;
 
         // Auto-size textareas after rendering
+         
         setTimeout(() => {
+            
             el.querySelectorAll('textarea').forEach(autoH);
+        
         }, 0);
+
+        // Enable drag
+        initDrag(el, note.id);
 
         return el;
     }

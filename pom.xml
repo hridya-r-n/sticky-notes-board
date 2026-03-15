@@ -6,11 +6,6 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <!--
-        Spring Boot Parent
-        This gives us sensible defaults so we don't have to configure everything manually.
-        This is one of the key Spring Boot features: "Auto-configuration".
-    -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -20,7 +15,7 @@
     <groupId>com.stickynotes</groupId>
     <artifactId>sticky-notes</artifactId>
     <version>1.0.0</version>
-    <description>Virtual Sticky Notes Board - Beginner Spring Boot Project</description>
+    <description>Virtual Sticky Notes Board</description>
 
     <properties>
         <java.version>17</java.version>
@@ -31,10 +26,9 @@
         <!--
             Spring Boot Starter Web
             This single dependency pulls in everything needed to build a web app:
-            - Spring MVC (handles HTTP requests)
-            - Embedded Tomcat server (no separate server install needed)
-            - Jackson (converts Java objects to/from JSON automatically)
-            This is a "Spring Boot Starter Dependency" from your syllabus.
+            - Spring MVC 
+            - Embedded Tomcat server 
+            - Jackson 
         -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -52,7 +46,6 @@
 
     <build>
         <plugins>
-            <!-- Allows us to run the app with: mvn spring-boot:run -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

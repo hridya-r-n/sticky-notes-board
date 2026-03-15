@@ -1,26 +1,12 @@
 package com.stickynotes.model;
 
-/**
- * REQUEST MODEL — Used to receive data sent from the browser/frontend.
- *
- * When the user creates or updates a note, the browser sends JSON like:
- * {
- *   "title": "My Note",
- *   "content": "Some text here",
- *   "color": "#86efac"
- * }
- *
- * Spring Boot automatically converts (deserializes) that JSON
- * into this Java object for us. No extra code needed — this is
- * Auto-configuration at work.
- */
 public class NoteRequest {
 
     private String title;
     private String content;
     private String color;
 
-    // Default constructor required for JSON deserialization
+    // Default constructor for JSON deserialization
     public NoteRequest() {}
 
     public NoteRequest(String title, String content, String color) {
