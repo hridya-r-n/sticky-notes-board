@@ -85,7 +85,7 @@ public class NoteService {
             throw new IllegalArgumentException("Title cannot be empty");
         }
 
-        String color = (request.getColor() != null) ? request.getColor() : "#fef08a";
+        String color = (request.getColor() != null) ? request.getColor() : "#6b3d5a";
 
         StickyNote note = new StickyNote.Builder(idCounter.getAndIncrement(), request.getTitle().trim())
                 .content(request.getContent() != null ? request.getContent() : "")

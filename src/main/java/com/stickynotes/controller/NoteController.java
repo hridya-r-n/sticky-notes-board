@@ -28,7 +28,7 @@ public class NoteController {
     @GetMapping
     public ResponseEntity<List<StickyNote>> getAllNotes() {
         List<StickyNote> notes = noteService.getAllNotes();
-        return ResponseEntity.ok(notes);   // HTTP 200 + JSON body
+        return ResponseEntity.ok(notes);   
     }
 
     // Returns one note by its ID
@@ -36,23 +36,23 @@ public class NoteController {
     public ResponseEntity<StickyNote> getNoteById(@PathVariable long id) {
         Optional<StickyNote> note = noteService.getNoteById(id);
         if (note.isPresent()) {
-            return ResponseEntity.ok(note.get());          // HTTP 200
+            return ResponseEntity.ok(note.get());          
         } else {
-            return ResponseEntity.notFound().build();       // HTTP 404
+            return ResponseEntity.notFound().build();       
         }
     }
 
-    // Creates a new note. Browser sends JSON, Spring converts it to NoteRequest.
+    // Creates a new note
     @PostMapping
     public ResponseEntity<Object> createNote(@RequestBody NoteRequest request) {
         try {
             StickyNote created = noteService.createNote(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(created);  // HTTP 201
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);  
         } catch (IllegalArgumentException e) {
-            // If validation fails, send back a helpful error message
+            
             Map<String, String> error = new HashMap<>();
             error.put("error", e.getMessage());
-            return ResponseEntity.badRequest().body(error);   // HTTP 400
+            return ResponseEntity.badRequest().body(error);   
         }
     }
 
@@ -62,11 +62,11 @@ public class NoteController {
                                              @RequestBody NoteRequest request) {
         Optional<StickyNote> updated = noteService.updateNote(id, request);
         if (updated.isPresent()) {
-            return ResponseEntity.ok(updated.get());          // HTTP 200
+            return ResponseEntity.ok(updated.get());          
         } else {
             Map<String, String> error = new HashMap<>();
             error.put("error", "Note with id " + id + " not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);  // HTTP 404
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);  
         }
     }
 
@@ -90,7 +90,7 @@ public class NoteController {
         if (deleted) {
             Map<String, String> msg = new HashMap<>();
             msg.put("message", "Note deleted successfully");
-            return ResponseEntity.ok(msg);                    // HTTP 200
+            return ResponseEntity.ok(msg);                    
         } else {
             Map<String, String> error = new HashMap<>();
             error.put("error", "Note with id " + id + " not found");

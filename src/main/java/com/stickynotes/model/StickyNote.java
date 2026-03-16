@@ -52,7 +52,7 @@ public class StickyNote {
 
         // Optional fields with defaults
         private String content = "";
-        private String color   = "#fef08a";
+        private String color   = "#6b3d5a";
         private boolean pinned = false;
 
         public Builder(long id, String title) {
