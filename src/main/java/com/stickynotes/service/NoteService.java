@@ -38,7 +38,7 @@ public class NoteService {
 
         // Add a few sample notes using the Builder pattern
         notes.add(new StickyNote.Builder(idCounter.getAndIncrement(), "Welcome! ")
-                .content("This is your sticky notes board. Create, edit, pin and delete notes!")
+                .content("This is the sticky notes board. Create, edit, pin and delete notes!")
                 .color("#6b3d5a")
                 .pinned(true)
                 .build());

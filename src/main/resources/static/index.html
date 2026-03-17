@@ -109,8 +109,8 @@
 
         /*  STICKY NOTE  */
         .note {
-            width: 220px;
-            min-height: 190px;
+            width: 280px;
+            min-height: 240px;
             border-radius: 2px;
             padding: 0;
             display: flex;
@@ -187,7 +187,7 @@
             color: rgba(0, 0, 0, 0.82);
             border: none; background: transparent;
             outline: none; resize: none;
-            min-height: 80px;
+            min-height: 130px;
             line-height: 1.55;
             cursor: text;
         }
@@ -409,13 +409,11 @@
 
     // Generate a stable random position from note id
     function randomPos(id) {
-        const board  = document.getElementById('board');
-        const bw     = board.offsetWidth  || window.innerWidth;
-        const bh     = board.offsetHeight || window.innerHeight - 58;
-        // Use id as a seed so position is consistent on re-render
-        const seed   = (id * 9301 + 49297) % 233280;
-        const x      = 40 + (seed % (bw - 280));
-        const y      = 40 + ((seed * 7) % (bh - 240));
+        const bw = window.innerWidth;
+        const bh = window.innerHeight - 58;
+        const seed = (id * 9301 + 49297) % 233280;
+        const x = 40 + (seed % Math.max(100, bw - 320));
+        const y = 40 + ((seed * 7) % Math.max(100, bh - 280));
         return { x, y };
     }
 
@@ -476,6 +474,7 @@
 
     // Boot 
     buildColorPicker();
+    notePositions = {};
     loadNotes();
 
     //  Color Picker 
