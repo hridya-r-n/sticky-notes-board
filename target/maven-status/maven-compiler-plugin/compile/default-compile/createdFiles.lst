@@ -5,3 +5,4 @@ com\stickynotes\service\NoteService.class
 com\stickynotes\model\StickyNote.class
 com\stickynotes\model\StickyNote$Builder.class
 com\stickynotes\service\NoteObserver.class
+com\stickynotes\service\NoteService$1.class
