@@ -1,14 +1,14 @@
 [ {
-  "id" : 1,
-  "title" : "Welcome! \uD83D\uDC4B",
-  "content" : "This is your sticky notes board. Create, edit, pin and delete notes!",
-  "color" : "#3d2e3a",
-  "pinned" : true,
-  "createdAt" : "21 Mar 2026"
-}, {
   "id" : 2,
   "title" : "Do assignment",
   "content" : "complete assignment by monday",
+  "color" : "#6b3a28",
+  "pinned" : false,
+  "createdAt" : "21 Mar 2026"
+}, {
+  "id" : 3,
+  "title" : "Welcome!",
+  "content" : "This is your sticky notes board. Create, edit, pin and delete notes!",
   "color" : "#6b3a28",
   "pinned" : true,
   "createdAt" : "21 Mar 2026"

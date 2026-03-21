@@ -55,7 +55,7 @@ public class NoteService {
 
         // If no notes were loaded add sample notes
         if (notes.isEmpty()) {
-            notes.add(new StickyNote.Builder(idCounter.getAndIncrement(), "Welcome! 👋")
+            notes.add(new StickyNote.Builder(idCounter.getAndIncrement(), "Welcome! ")
                     .content("This is your sticky notes board. Create, edit, pin and delete notes!")
                     .color("#3d2e3a").pinned(true).build());
             saveToFile();
